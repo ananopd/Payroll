@@ -251,7 +251,7 @@
             if (role === 'assistant' || role === 'nurse') {
                 // 公式：(1.34倍單價 * 120分) + (1.67倍單價 * 360分)
                 let compCash = (ot134 * 120) + (ot167 * 360);
-                html += generateRow("★ 補休換錢 (8H)", `<span class="blue-highlight">$${Math.round(compCash)} 元</span>`);
+                html += generateRow("★ 補休換錢 (1.34*2H+1.67*6H)", `<span class="blue-highlight">$${Math.round(compCash)} 元</span>`);
             }
         }
 
