@@ -112,7 +112,7 @@
     <h2>115年 薪資計算機</h2>
 
     <div class="form-group">
-        <label for="role">1. 選擇身份</label>
+        <label for="role">選擇身份</label>
         <select id="role" onchange="toggleInputs()">
             <option value="nurse">護理人員</option>
             <option value="assistant">門診護佐</option>
@@ -124,10 +124,10 @@
     <div id="student-options" style="display:none">
         <div class="form-group checkbox-group">
             <input type="checkbox" id="hasLicense" onchange="updateHourlyRatePlaceholder()">
-            <label for="hasLicense" style="margin:0; cursor:pointer;">2. 是否有職業登記/安安</label>
+            <label for="hasLicense" style="margin:0; cursor:pointer;">是否有執照並職業登記在安安</label>
         </div>
         <div class="form-group">
-            <label for="hourlyRate">3. 輸入時薪</label>
+            <label for="hourlyRate">輸入時薪</label>
             <input type="number" id="hourlyRate" value="196">
             <div class="note">* 預設 196 (無照) 或 230 (有照)</div>
         </div>
@@ -278,4 +278,5 @@
 
 </body>
 </html>
+
 
