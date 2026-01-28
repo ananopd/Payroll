@@ -237,6 +237,11 @@
                 nightOtText = `$${ot167} 元/分 (同1.67倍)`;
             }
 
+            // --- 新增：年終與年薪計算 ---
+            const yearEndBonus = salary + 20000;
+            const annualIncome = (salary * 12) + yearEndBonus;
+
+
             html += `<h3>${getRoleName(role)} 薪資試算</h3>`;
             html += generateRow("月薪", `$${salary.toLocaleString()} 元`);
             html += generateRow("每小時薪資", `$${Math.round(perHour)} 元`);
@@ -247,12 +252,16 @@
             html += generateRow("22點後加班", nightOtText);
             html += generateRow("休假換錢", `$${data.leaveCash} 元/日`);
             
-            // --- 新增：護佐與護理人員的補休換錢 (1.34*2h + 1.67*6h) ---
+            // 護佐與護理人員的補休換錢 (1.34*2h + 1.67*6h)
             if (role === 'assistant' || role === 'nurse') {
-                // 公式：(1.34倍單價 * 120分) + (1.67倍單價 * 360分)
                 let compCash = (ot134 * 120) + (ot167 * 360);
                 html += generateRow("★ 補休換錢 (1.34*2H+1.67*6H)", `<span class="blue-highlight">$${Math.round(compCash)} 元</span>`);
             }
+
+            // --- 顯示年終與年薪 ---
+            html += `<hr style="margin: 10px 0; border: 0; border-top: 1px dashed #ccc;">`;
+            html += generateRow("年終獎金 (1個月+2萬)", `$${yearEndBonus.toLocaleString()} 元`);
+            html += generateRow("年度總所得 (12個月+年終)", `<span class="blue-highlight" style="font-size:1.1em">$${annualIncome.toLocaleString()} 元</span>`);
         }
 
         resultBox.innerHTML = html;
@@ -278,6 +287,3 @@
 
 </body>
 </html>
-
-
-
