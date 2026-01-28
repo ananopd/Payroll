@@ -204,8 +204,8 @@
             const nightOtPerHour = hasLicense ? 400 : 300;
 
             html += `<h3>工讀生 薪資試算</h3>`;
-            html += generateRow("每分鐘薪資", `$${perMinute.toFixed(2)} 元`);
             html += generateRow("每小時薪資", `$${rate} 元`);
+            html += generateRow("每分鐘薪資", `$${perMinute.toFixed(2)} 元`);
             html += generateRow("每日薪資 (8H)", `$${perDay} 元`);
             html += generateRow("加班每分鐘 (約1.34倍)", `$${otPerMinute.toFixed(2)} 元`);
             html += generateRow("加班每小時 (約1.34倍)", `$${Math.round(otPerHour)} 元`);
@@ -238,9 +238,9 @@
             }
 
             html += `<h3>${getRoleName(role)} 薪資試算</h3>`;
-            html += generateRow("每分鐘薪資", `$${perMinute} 元`);
-            html += generateRow("每小時薪資", `$${Math.round(perHour)} 元`);
             html += generateRow("月薪", `$${salary.toLocaleString()} 元`);
+            html += generateRow("每小時薪資", `$${Math.round(perHour)} 元`);
+            html += generateRow("每分鐘薪資", `$${perMinute} 元`);
             html += generateRow("加班 1.34倍 (前2H)", `$${ot134} 元/分`);
             html += generateRow("加班 1.67倍 (後6H)", `$${ot167} 元/分`);
 
@@ -278,3 +278,4 @@
 
 </body>
 </html>
+
