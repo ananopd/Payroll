@@ -5,104 +5,178 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>薪資計算機</title>
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+        }
+
         body {
-            font-family: "Microsoft JhengHei", Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: "Microsoft JhengHei", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
             margin: 0;
             padding: 20px;
+            color: #333;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
         }
+
         .container {
-            background-color: white;
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 600px;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         }
+
         h2 {
             text-align: center;
-            color: #333;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .form-section {
             margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f1f3f5;
+            border-radius: 8px;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
+
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: bold;
-            color: #555;
+            color: var(--primary-color);
         }
+
         select, input[type="number"] {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             font-size: 16px;
-            box-sizing: border-box;
+            background-color: white;
+            box-sizing: border-box; 
         }
+
         .checkbox-group {
             display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: white;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        .checkbox-item {
+            display: flex;
             align-items: center;
-            margin-top: 10px;
         }
-        .checkbox-group input {
-            width: auto;
+
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
             margin-right: 10px;
-            transform: scale(1.2);
+            cursor: pointer;
         }
+
+        .checkbox-item label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .fixed-value {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            color: #495057;
+            font-family: monospace;
+            font-size: 1.1em;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
         button {
             width: 100%;
-            padding: 12px;
-            background-color: #28a745;
+            padding: 14px;
+            background-color: var(--accent-color);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
+            transition: background 0.2s;
             margin-top: 10px;
-            transition: background 0.3s;
         }
+
         button:hover {
-            background-color: #218838;
+            background-color: #2980b9;
         }
+
         .result-box {
             margin-top: 25px;
-            padding: 20px;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            display: none;
+            border-top: 2px dashed var(--border-color);
+            padding-top: 20px;
+            display: none; /* 預設隱藏 */
         }
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #dcdcdc;
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
-        .result-item:last-child {
-            border-bottom: none;
+
+        .result-table th, .result-table td {
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: right;
         }
-        .result-label {
+
+        .result-table th {
+            text-align: left;
             color: #666;
+            font-weight: normal;
+            width: 60%;
         }
-        .result-value {
+
+        .result-table td {
             font-weight: bold;
             color: #000;
+            font-family: monospace;
+            font-size: 1.1em;
         }
+
         .highlight {
-            color: #d9534f;
-            font-weight: bold;
+            color: #e74c3c !important;
         }
-        .blue-highlight {
-            color: #0056b3;
-            font-weight: bold;
+
+        .total-row td {
+            background-color: #e8f4f8;
+            color: var(--primary-color);
+            font-size: 1.2em;
+            border-top: 2px solid var(--accent-color);
         }
-        .note {
-            font-size: 12px;
-            color: #888;
-            margin-top: 5px;
+
+        .info-tag {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-left: 5px;
+        }
+
+        /* 隱藏/顯示控制 */
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -111,181 +185,272 @@
 <div class="container">
     <h2>115年 薪資計算機</h2>
 
-    <div class="form-group">
-        <label for="role">選擇身份</label>
-        <select id="role" onchange="toggleInputs()">
+    <div class="form-section">
+        <label for="roleSelect">請選擇職務</label>
+        <select id="roleSelect" onchange="updateUI()">
             <option value="nurse">護理人員</option>
-            <option value="assistant">門診護佐</option>
-            <option value="admin">病歷室事務員/行政人員</option>
+            <option value="assistant">護佐</option>
+            <option value="admin">病歷室事務員與行政人員</option>
             <option value="student">工讀生</option>
         </select>
     </div>
 
-    <div id="student-options" style="display:none">
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="hasLicense" onchange="updateHourlyRatePlaceholder()">
-            <label for="hasLicense" style="margin:0; cursor:pointer;">是否有執照並職業登記在安安</label>
+    <div id="regularInputs" class="form-section">
+        <label>舊制底薪</label>
+        <div id="baseSalaryDisplay" class="fixed-value">26400</div>
+        
+        <div id="special-section">
+            <br>
+            <label>特別津貼</label>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="special_edu" value="2000">
+                    <label for="special_edu">衛教師 (+2000)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="special_lead" value="2000">
+                    <label for="special_lead">Leader (+2000)</label>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="hourlyRate">輸入時薪</label>
-            <input type="number" id="hourlyRate" value="196">
-            <div class="note">* 預設 196 (無照) 或 230 (有照)</div>
+
+        <div id="license-section">
+            <br>
+            <label>執照加給</label>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="license_check" value="3000" checked>
+                    <label for="license_check">執照加給 (+3000)</label>
+                </div>
+            </div>
         </div>
+
+        <br>
+        <label>伙食津貼</label>
+        <div class="fixed-value">3600</div>
+    </div>
+
+    <div id="studentInputs" class="form-section hidden">
+        <label for="hourlyRateSelect">請選擇時薪</label>
+        <select id="hourlyRateSelect">
+            <option value="196">196</option>
+            <option value="200">200</option>
+            <option value="205">205</option>
+            <option value="210">210</option>
+            <option value="215">215</option>
+            <option value="220">220</option>
+            <option value="230">230</option>
+        </select>
     </div>
 
     <button onclick="calculate()">計算薪資</button>
 
-    <div id="result-box" class="result-box">
+    <div id="resultBox" class="result-box">
         </div>
 </div>
 
 <script>
-    // 資料庫：定義各職位的固定參數
-    const roleData = {
-        admin: {
-            salary: 31000,
-            leaveCash: 1050,
-            nightOvertimeRate: null 
-        },
-        assistant: {
-            salary: 34125,
-            leaveCash: 1150,
-            nightOvertimeRate: 5.0 
-        },
-        nurse: {
-            salary: 38500,
-            leaveCash: 1300,
-            nightOvertimeRate: 6.7 
-        }
+    // --- 資料定義 ---
+    const roles = {
+        nurse: { name: '護理人員', base: 26400, nightRate: 6.70 },
+        assistant: { name: '護佐', base: 25650, nightRate: 6.70 },
+        admin: { name: '病歷室/行政', base: 27400, nightRate: null }, 
+        student: { name: '工讀生', base: 0, nightRate: 300 } 
     };
 
-    function toggleInputs() {
-        const role = document.getElementById('role').value;
-        const studentOptions = document.getElementById('student-options');
+    const MEAL_ALLOWANCE = 3600;
+    const BONUS_FIXED = 20000;
+
+    // --- 介面更新邏輯 ---
+    function updateUI() {
+        const role = document.getElementById('roleSelect').value;
+        const regularInputs = document.getElementById('regularInputs');
+        const studentInputs = document.getElementById('studentInputs');
+        const baseDisplay = document.getElementById('baseSalaryDisplay');
         
+        // 取得控制區塊與Checkbox
+        const specialSection = document.getElementById('special-section');
+        const licenseSection = document.getElementById('license-section');
+        
+        const chkSpecialEdu = document.getElementById('special_edu');
+        const chkSpecialLead = document.getElementById('special_lead');
+        const chkLicense = document.getElementById('license_check');
+
+        // 預設重置顯示狀態 (避免邏輯混亂，先全部顯示，後面再依條件隱藏)
+        specialSection.style.display = 'block';
+        licenseSection.style.display = 'block';
+
         if (role === 'student') {
-            studentOptions.style.display = 'block';
+            regularInputs.classList.add('hidden');
+            studentInputs.classList.remove('hidden');
         } else {
-            studentOptions.style.display = 'none';
+            regularInputs.classList.remove('hidden');
+            studentInputs.classList.add('hidden');
+            
+            // 更新舊制底薪顯示
+            baseDisplay.textContent = roles[role].base;
+
+            // --- 依照職務處理 Checkbox 狀態 ---
+            if (role === 'nurse') {
+                // 護理人員：預設勾選執照
+                chkLicense.checked = true;
+                // 確保顯示
+                specialSection.style.display = 'block';
+                licenseSection.style.display = 'block';
+            } 
+            else if (role === 'assistant') {
+                // 護佐：取消勾選執照並隱藏
+                chkLicense.checked = false;
+                licenseSection.style.display = 'none';
+                // 特別津貼維持顯示(未指定隱藏)，但通常護佐可能無此津貼，若需隱藏可在此處加上
+            } 
+            else if (role === 'admin') {
+                // 行政：取消勾選並隱藏「所有」checkbox
+                chkSpecialEdu.checked = false;
+                chkSpecialLead.checked = false;
+                chkLicense.checked = false;
+                
+                specialSection.style.display = 'none';
+                licenseSection.style.display = 'none';
+            }
         }
+        
+        // 清空舊結果
+        document.getElementById('resultBox').style.display = 'none';
     }
 
-    function updateHourlyRatePlaceholder() {
-        const hasLicense = document.getElementById('hasLicense').checked;
-        const rateInput = document.getElementById('hourlyRate');
-        if (hasLicense) {
-            rateInput.value = 230;
-        } else {
-            rateInput.value = 196;
-        }
+    // --- 核心計算邏輯 (四捨五入至小數點第二位) ---
+    function round2(num) {
+        return Math.round(num * 100) / 100;
     }
 
     function calculate() {
-        const role = document.getElementById('role').value;
-        const resultBox = document.getElementById('result-box');
+        const roleKey = document.getElementById('roleSelect').value;
+        const resultBox = document.getElementById('resultBox');
         let html = '';
 
-        if (role === 'student') {
-            // --- 工讀生計算 ---
-            const rate = parseFloat(document.getElementById('hourlyRate').value);
-            const hasLicense = document.getElementById('hasLicense').checked;
-
-            if (isNaN(rate)) {
-                alert("請輸入有效的時薪");
-                return;
-            }
-
-            const perMinute = rate / 60;
-            const perDay = rate * 8;
+        if (roleKey === 'student') {
+            // ================= 工讀生計算 =================
+            const hourlyRate = parseFloat(document.getElementById('hourlyRateSelect').value);
+            const perMinute = round2(hourlyRate / 60);
             
-            const otPerMinute = perMinute * 1.34; 
-            const otPerHour = rate * 1.34;
+            // 加班費(時)與(分)
+            const otHourResult = round2(hourlyRate * 1.3333); 
+            const otMinuteResult = round2(otHourResult / 60);
 
-            const nightOtPerHour = hasLicense ? 400 : 300;
+            // 22點後 (參數：工讀生固定 300元/時)
+            const nightRate = 300; 
 
-            html += `<h3>工讀生 薪資試算</h3>`;
-            html += generateRow("每小時薪資", `$${rate} 元`);
-            html += generateRow("每分鐘薪資", `$${perMinute.toFixed(2)} 元`);
-            html += generateRow("每日薪資 (8H)", `$${perDay} 元`);
-            html += generateRow("加班每分鐘 (約1.34倍)", `$${otPerMinute.toFixed(2)} 元`);
-            html += generateRow("加班每小時 (約1.34倍)", `$${Math.round(otPerHour)} 元`);
-            html += generateRow("22點後加班", `<span class="highlight">$${nightOtPerHour} 元/時</span>`);
+            html += `<h3>${roles[roleKey].name} - 薪資試算</h3>`;
+            html += `<table class="result-table">`;
+            html += `<tr><th>時薪</th><td>${hourlyRate}</td></tr>`;
+            html += `<tr><th>每分鐘</th><td>${perMinute}</td></tr>`;
+            html += `<tr><th>每日 (8H)</th><td>${hourlyRate * 8}</td></tr>`;
+            html += `<tr><th>加班費 (1.33倍/時)</th><td>${otHourResult}</td></tr>`;
+            html += `<tr><th>加班費 (1.33倍/分)</th><td>${otMinuteResult}</td></tr>`;
+            html += `<tr class="total-row"><th>22點後 (每小時)</th><td>${nightRate}</td></tr>`;
+            html += `</table>`;
 
         } else {
-            // --- 月薪人員計算 ---
-            const data = roleData[role];
-            const salary = data.salary;
-
-            // 每分鐘 (月薪 / 30 / 8 / 60) 取小數兩位
-            const perMinuteRaw = salary / 30 / 8 / 60;
-            const perMinute = parseFloat(perMinuteRaw.toFixed(2)); 
-
-            const perHour = salary / 30 / 8;
+            // ================= 正職人員計算 =================
+            const oldBase = roles[roleKey].base;
+            const meal = MEAL_ALLOWANCE;
             
-            // 加班費率 (模擬圖表：進位至小數點後一位)
-            let ot134Raw = perMinute * 1.34;
-            let ot134 = Math.round(ot134Raw * 10) / 10;
+            // 計算 Checkbox (即使隱藏，checked 為 false 也就是 0，邏輯正確)
+            let special = 0;
+            if (document.getElementById('special_edu').checked) special += 2000;
+            if (document.getElementById('special_lead').checked) special += 2000;
 
-            let ot167Raw = perMinute * 1.67;
-            let ot167 = Math.round(ot167Raw * 10) / 10;
+            let license = 0;
+            if (document.getElementById('license_check').checked) license += 3000;
 
-            // 22點後加班
-            let nightOtText;
-            if (data.nightOvertimeRate) {
-                nightOtText = `<span class="highlight">$${data.nightOvertimeRate.toFixed(1)} 元/分</span>`;
-            }
+            // [舊制月薪] = 舊制底薪 + 執照加給 + 伙食津貼 (依指示公式，不含特別津貼)
+            const oldMonthly = oldBase + license + meal; 
 
-            // --- 新增：年終與年薪計算 ---
-            const yearEndBonus = salary + 20000;
-            const annualIncome = (salary * 12) + yearEndBonus;
+            // [新制底薪] = 舊制底薪 + ((舊制底薪 + 執照加給 + 伙食津貼) * 2 / 12)
+            // 公式內不含特別津貼
+            const buyOut = round2((oldBase + license + meal) * 2 / 12);
+            const newBase = oldBase + buyOut;
 
+            // [新制月薪] = 新制底薪 + 執照加給 + 伙食津貼
+            const newMonthly = newBase + license + meal;
 
-            html += `<h3>${getRoleName(role)} 薪資試算</h3>`;
-            html += generateRow("月薪", `$${salary.toLocaleString()} 元`);
-            html += generateRow("每小時薪資", `$${Math.round(perHour)} 元`);
-            html += generateRow("每分鐘薪資", `$${perMinute} 元`);
-            html += generateRow("加班 1.34倍 (前2H)", `$${ot134} 元/分`);
-            html += generateRow("加班 1.67倍 (後6H)", `$${ot167} 元/分`);
-            if (role === 'assistant' || role === 'nurse') {
-                html += generateRow("22點後加班", nightOtText);
-            }
-            html += generateRow("特休換錢", `<span class="blue-highlight">$${data.leaveCash} 元</span>`);
+            // [特休換錢] = 月薪 / 30
+            const leaveCash = round2(newMonthly / 30);
+
+            // [加班費(時)] = 特休換錢 / 8
+            const otRateHour = round2(leaveCash / 8);
+
+            // [加班費(分)] = 加班費(時) / 60
+            const otRateMin = round2(otRateHour / 60);
+
+            // [加班費(1.33)] = 加班費(分) * 1.3333
+            const ot133 = round2(otRateMin * 1.3333);
+
+            // [加班費(1.66)] = 加班費(分) * 1.6666
+            const ot166 = round2(otRateMin * 1.6666);
+
+            // [補休換錢] = (加班費(1.33)*2*60) + (加班費(1.66)*6*60)
+            const compCash = round2((ot133 * 2 * 60) + (ot166 * 6 * 60));
+
+            // [年終] = 全勤固定獎金 20000 + 月薪
+            const yearEndTotal = newMonthly + BONUS_FIXED;
+
+            // [22點後]
+            const nightVal = roles[roleKey].nightRate;
+
+            // --- 產生 HTML ---
+            html += `<h3>${roles[roleKey].name} - 新制試算</h3>`;
+            html += `<table class="result-table">`;
             
-            // 護佐與護理人員的補休換錢 (1.34*2h + 1.67*6h)
-            if (role === 'assistant' || role === 'nurse') {
-                let compCash = (ot134 * 120) + (ot167 * 360);
-                html += generateRow("補休換錢 (1.34*2H+1.67*6H)", `<span class="blue-highlight">$${Math.round(compCash)} 元</span>`);
+			if (roleKey === 'admin') {
+				html += `<tr style="background:#f9f9f9; color:#777;"><th>(參考) 舊制月薪<br><span style="font-size:0.8em">底薪+伙食</span></th><td>${oldMonthly.toLocaleString()}</td></tr>`;
+			} else {
+				html += `<tr style="background:#f9f9f9; color:#777;"><th>(參考) 舊制月薪<br><span style="font-size:0.8em">底薪+執照+伙食</span></th><td>${oldMonthly.toLocaleString()}</td></tr>`;
+			}
+            if(special > 0) {
+                 html += `<tr style="background:#f9f9f9; color:#777;"><th>(參考) 特別津貼<br><span style="font-size:0.8em">外加，不入底薪公式</span></th><td>${special.toLocaleString()}</td></tr>`;
             }
 
-            // --- 顯示年終與年薪 ---
-            html += `<hr style="margin: 10px 0; border: 0; border-top: 1px dashed #ccc;">`;
-            html += generateRow("年終獎金 (1個月+2萬)", `$${yearEndBonus.toLocaleString()} 元`);
-            html += generateRow("年度總所得 (12個月+年終)", `<span class="blue-highlight" style="font-size:1.1em">$${annualIncome.toLocaleString()} 元</span>`);
+            html += `<tr><td colspan="2" style="border-bottom: 2px solid #ddd;"></td></tr>`;
+
+            html += `<tr><th>新制底薪 <span class="info-tag">(算式結果)</span></th><td>${newBase.toLocaleString()}</td></tr>`;
+			if (roleKey === 'admin') {
+				html += `<tr><th>新制月薪 <span class="info-tag">(底薪+伙食)</span></th><td style="color:blue; font-size:1.2em">${newMonthly.toLocaleString()}</td></tr>`;
+			}
+			else {
+				html += `<tr><th>新制月薪 <span class="info-tag">(底薪+執照+伙食)</span></th><td style="color:blue; font-size:1.2em">${newMonthly.toLocaleString()}</td></tr>`;
+			}
+            
+            html += `<tr><th>特休換錢 <span class="info-tag">(/30)</span></th><td>${leaveCash}</td></tr>`;
+            html += `<tr><th>加班費 (時) <span class="info-tag">(/8)</span></th><td>${otRateHour}</td></tr>`;
+            html += `<tr><th>加班費 (分) <span class="info-tag">(/60)</span></th><td>${otRateMin}</td></tr>`;
+            html += `<tr><th>加班費 1.33 <span class="info-tag">(*1.3333)</span></th><td>${ot133}</td></tr>`;
+            html += `<tr><th>加班費 1.66 <span class="info-tag">(*1.6666)</span></th><td>${ot166}</td></tr>`;
+            
+            if (nightVal !== null) {
+                html += `<tr><th>22點後 <span class="info-tag">(每分鐘)</span></th><td class="highlight">${nightVal.toFixed(2)}</td></tr>`;
+            }
+
+            html += `<tr class="total-row"><th>補休換錢<br><span style="font-size:0.5em; font-weight:normal">(1.33*2小時*60分 + 1.66*6小時*60分)</span></th><td>${compCash.toLocaleString()}</td></tr>`;
+            
+            html += `<tr><th>年終預估 <span class="info-tag">(月薪+2萬)</span></th><td>${yearEndTotal.toLocaleString()}</td></tr>`;
+
+            html += `</table>`;
+            
+            html += `<div style="margin-top:10px; font-size:0.9em; color:#666;">
+                * 計算公式依據 115年 新制規範<br>
+                * 所有金額皆四捨五入至小數點第2位
+            </div>`;
         }
 
         resultBox.innerHTML = html;
         resultBox.style.display = 'block';
     }
 
-    function generateRow(label, value) {
-        return `
-            <div class="result-item">
-                <span class="result-label">${label}</span>
-                <span class="result-value">${value}</span>
-            </div>
-        `;
-    }
-
-    function getRoleName(role) {
-        if(role === 'admin') return '病歷室/行政人員';
-        if(role === 'assistant') return '門診護佐';
-        if(role === 'nurse') return '護理人員';
-        return '員工';
-    }
+    // 初始化介面狀態
+    updateUI();
 </script>
 
 </body>
 </html>
-
-
-
