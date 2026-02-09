@@ -367,9 +367,8 @@
             // [舊制月薪] = 舊制底薪 + 執照加給 + 伙食津貼 (依指示公式，不含特別津貼)
             const oldMonthly = oldBase + license + meal; 
 
-            // [新制底薪] = 舊制底薪 + ((舊制底薪 + 執照加給 + 伙食津貼) * 2 / 12)
-            // 公式內不含特別津貼
-            const buyOut = round2((oldBase + license + meal) * 2 / 12);
+            // [新制底薪] = 舊制底薪 + ((舊制底薪 + 執照加給 + 特別津貼 + 伙食津貼) * 2 / 12)
+            const buyOut = round2((oldBase + license + special + meal) * 2 / 12);
             const newBase = oldBase + buyOut;
 
             // [新制月薪] = 新制底薪 + 執照加給 + 伙食津貼
@@ -456,5 +455,6 @@
 
 </body>
 </html>
+
 
 
