@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>薪資計算機</title>
+    <title>薪資計算機 (新制試算)</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -196,7 +196,7 @@
     </div>
 
     <div id="regularInputs" class="form-section">
-        <label>舊制底薪</label>
+        <label id="baseSalaryLabel">舊制底薪</label>
         <div id="baseSalaryDisplay" class="fixed-value">26400</div>
         
         <div id="special-section">
@@ -267,6 +267,7 @@
         const regularInputs = document.getElementById('regularInputs');
         const studentInputs = document.getElementById('studentInputs');
         const baseDisplay = document.getElementById('baseSalaryDisplay');
+        const baseLabel = document.getElementById('baseSalaryLabel'); // 新增取得標籤
         
         // 取得控制區塊與Checkbox
         const specialSection = document.getElementById('special-section');
@@ -276,7 +277,7 @@
         const chkSpecialLead = document.getElementById('special_lead');
         const chkLicense = document.getElementById('license_check');
 
-        // 預設重置顯示狀態 (避免邏輯混亂，先全部顯示，後面再依條件隱藏)
+        // 預設重置顯示狀態
         specialSection.style.display = 'block';
         licenseSection.style.display = 'block';
 
@@ -290,21 +291,23 @@
             // 更新舊制底薪顯示
             baseDisplay.textContent = roles[role].base;
 
-            // --- 依照職務處理 Checkbox 狀態 ---
+            // --- 依照職務處理 Checkbox 狀態與標籤 ---
             if (role === 'nurse') {
-                // 護理人員：預設勾選執照
+                baseLabel.textContent = "舊制底薪 (參數)";
                 chkLicense.checked = true;
-                // 確保顯示
                 specialSection.style.display = 'block';
                 licenseSection.style.display = 'block';
             } 
             else if (role === 'assistant') {
-                // 護佐：取消勾選執照並隱藏
+                baseLabel.textContent = "舊制底薪 (參數)";
                 chkLicense.checked = false;
+                chkSpecialEdu.checked = false;
+                chkSpecialLead.checked = false;
                 licenseSection.style.display = 'none';
-                // 特別津貼維持顯示(未指定隱藏)，但通常護佐可能無此津貼，若需隱藏可在此處加上
+                // 護佐仍保留特別津貼區塊顯示，若要隱藏可在此加 code
             } 
             else if (role === 'admin') {
+                baseLabel.textContent = "新制底薪 (固定)"; // 行政人員改標籤
                 // 行政：取消勾選並隱藏「所有」checkbox
                 chkSpecialEdu.checked = false;
                 chkSpecialLead.checked = false;
@@ -334,11 +337,8 @@
             const hourlyRate = parseFloat(document.getElementById('hourlyRateSelect').value);
             const perMinute = round2(hourlyRate / 60);
             
-            // 加班費(時)與(分)
             const otHourResult = round2(hourlyRate * 1.3333); 
             const otMinuteResult = round2(otHourResult / 60);
-
-            // 22點後 (參數：工讀生固定 300元/時)
             const nightRate = 300; 
 
             html += `<h3>${roles[roleKey].name} - 薪資試算</h3>`;
@@ -356,7 +356,7 @@
             const oldBase = roles[roleKey].base;
             const meal = MEAL_ALLOWANCE;
             
-            // 計算 Checkbox (即使隱藏，checked 為 false 也就是 0，邏輯正確)
+            // 計算 Checkbox
             let special = 0;
             if (document.getElementById('special_edu').checked) special += 2000;
             if (document.getElementById('special_lead').checked) special += 2000;
@@ -364,62 +364,56 @@
             let license = 0;
             if (document.getElementById('license_check').checked) license += 3000;
 
-            // [舊制月薪] = 舊制底薪 + 執照加給 + 伙食津貼 (依指示公式，不含特別津貼)
-            const oldMonthly = oldBase + license + meal; 
+            // 變數宣告
+            let newBase = 0;
+            let newMonthly = 0;
+            let oldMonthly = 0; // 僅參考用
 
-            // [新制底薪] = 舊制底薪 + ((舊制底薪 + 執照加給 + 特別津貼 + 伙食津貼) * 2 / 12)
-            const buyOut = round2((oldBase + license + special + meal) * 2 / 12);
-            const newBase = oldBase + buyOut;
+            if (roleKey === 'admin') {
+                // --- 病歷室/行政：無舊制，直接固定底薪 ---
+                newBase = oldBase; // 此時 oldBase 就是 27400
+                // 行政人員只有底薪+伙食 (UI上已隱藏執照/特別津貼，所以變數為0，加上去也無妨)
+                newMonthly = newBase + meal + special + license;
+            } else {
+                // --- 護理/護佐：套用舊制轉新制公式 ---
+                oldMonthly = oldBase + license + meal; 
+                // 公式：舊制底薪 + ((舊制底薪 + 執照 + 特別 + 伙食) * 2 / 12)
+                const buyOut = round2((oldBase + license + special + meal) * 2 / 12);
+                newBase = oldBase + buyOut;
+                // 新制月薪
+                newMonthly = newBase + license + meal;
+            }
 
-            // [新制月薪] = 新制底薪 + 執照加給 + 伙食津貼
-            const newMonthly = newBase + license + meal;
-
-            // [特休換錢] = 月薪 / 30
+            // --- 通用計算 (加班、特休等) ---
             const leaveCash = round2(newMonthly / 30);
-
-            // [加班費(時)] = 特休換錢 / 8
             const otRateHour = round2(leaveCash / 8);
-
-            // [加班費(分)] = 加班費(時) / 60
             const otRateMin = round2(otRateHour / 60);
-
-            // [加班費(1.33)] = 加班費(分) * 1.3333
             const ot133 = round2(otRateMin * 1.3333);
-
-            // [加班費(1.66)] = 加班費(分) * 1.6666
             const ot166 = round2(otRateMin * 1.6666);
-
-            // [補休換錢] = (加班費(1.33)*2*60) + (加班費(1.66)*6*60)
             const compCash = round2((ot133 * 2 * 60) + (ot166 * 6 * 60));
-
-            // [年終] = 全勤固定獎金 20000 + 月薪
             const yearEndTotal = newMonthly + BONUS_FIXED;
-
-            // [22點後]
             const nightVal = roles[roleKey].nightRate;
 
             // --- 產生 HTML ---
-            html += `<h3>${roles[roleKey].name} - 新制試算</h3>`;
+            html += `<h3>${roles[roleKey].name} - 薪資試算</h3>`;
             html += `<table class="result-table">`;
             
-			if (roleKey === 'admin') {
-				html += `<tr style="background:#f9f9f9; color:#777;"><th>(參考) 舊制月薪<br><span style="font-size:0.8em">底薪+伙食</span></th><td>${oldMonthly.toLocaleString()}</td></tr>`;
-			} else {
-				html += `<tr style="background:#f9f9f9; color:#777;"><th>(參考) 舊制月薪<br><span style="font-size:0.8em">底薪+執照+伙食</span></th><td>${oldMonthly.toLocaleString()}</td></tr>`;
-			}
-            if(special > 0) {
-                 html += `<tr style="background:#f9f9f9; color:#777;"><th>(參考) 特別津貼<br><span style="font-size:0.8em">外加，不入底薪公式</span></th><td>${special.toLocaleString()}</td></tr>`;
+            // 只有非行政人員才顯示舊制參考
+            if (roleKey !== 'admin') {
+                html += `<tr style="background:#f9f9f9; color:#777;"><th>(參考) 舊制月薪<br><span style="font-size:0.8em">底薪+執照+伙食</span></th><td>${oldMonthly.toLocaleString()}</td></tr>`;
+                
+                if(special > 0) {
+                     html += `<tr style="background:#f9f9f9; color:#777;"><th>(參考) 特別津貼<br><span style="font-size:0.8em">已納入新制底薪運算</span></th><td>${special.toLocaleString()}</td></tr>`;
+                }
+                html += `<tr><td colspan="2" style="border-bottom: 2px solid #ddd;"></td></tr>`;
             }
 
-            html += `<tr><td colspan="2" style="border-bottom: 2px solid #ddd;"></td></tr>`;
+            // 標題顯示處理
+            let baseTitle = (roleKey === 'admin') ? "新制底薪 (固定)" : "新制底薪 <span class='info-tag'>(算式結果)</span>";
+            let monthTitle = (roleKey === 'admin') ? "新制月薪 <span class='info-tag'>(底薪+伙食)</span>" : "新制月薪 <span class='info-tag'>(底薪+執照+伙食)</span>";
 
-            html += `<tr><th>新制底薪 <span class="info-tag">(算式結果)</span></th><td>${newBase.toLocaleString()}</td></tr>`;
-			if (roleKey === 'admin') {
-				html += `<tr><th>新制月薪 <span class="info-tag">(底薪+伙食)</span></th><td style="color:blue; font-size:1.2em">${newMonthly.toLocaleString()}</td></tr>`;
-			}
-			else {
-				html += `<tr><th>新制月薪 <span class="info-tag">(底薪+執照+伙食)</span></th><td style="color:blue; font-size:1.2em">${newMonthly.toLocaleString()}</td></tr>`;
-			}
+            html += `<tr><th>${baseTitle}</th><td>${newBase.toLocaleString()}</td></tr>`;
+            html += `<tr><th>${monthTitle}</th><td style="color:blue; font-size:1.2em">${newMonthly.toLocaleString()}</td></tr>`;
             
             html += `<tr><th>特休換錢 <span class="info-tag">(/30)</span></th><td>${leaveCash}</td></tr>`;
             html += `<tr><th>加班費 (時) <span class="info-tag">(/8)</span></th><td>${otRateHour}</td></tr>`;
@@ -431,7 +425,7 @@
                 html += `<tr><th>22點後 <span class="info-tag">(每分鐘)</span></th><td class="highlight">${nightVal.toFixed(2)}</td></tr>`;
             }
 
-            html += `<tr class="total-row"><th>補休換錢<br><span style="font-size:0.5em; font-weight:normal">(1.33*2小時*60分 + 1.66*6小時*60分)</span></th><td>${compCash.toLocaleString()}</td></tr>`;
+            html += `<tr class="total-row"><th>補休換錢<br><span style="font-size:0.5em; font-weight:normal">(1.33*120分 + 1.66*360分)</span></th><td>${compCash.toLocaleString()}</td></tr>`;
             
             html += `<tr><th>年終預估 <span class="info-tag">(月薪+2萬)</span></th><td>${yearEndTotal.toLocaleString()}</td></tr>`;
 
@@ -446,7 +440,7 @@
         resultBox.innerHTML = html;
         resultBox.style.display = 'block';
 
-		window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     // 初始化介面狀態
@@ -455,6 +449,3 @@
 
 </body>
 </html>
-
-
-
