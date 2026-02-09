@@ -446,6 +446,8 @@
 
         resultBox.innerHTML = html;
         resultBox.style.display = 'block';
+
+		window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     // 初始化介面狀態
@@ -454,3 +456,4 @@
 
 </body>
 </html>
+
